@@ -1,4 +1,7 @@
 # This is a sample Python script.
+#
+# Author: Damilola Olawoyin-Yussuf
+
 import HackerRank
 import grade
 from HackerRank import *
