@@ -117,6 +117,7 @@ class MyMainWindow(QMainWindow):
 
     def launchRegisterSession(self):
         self.close()
+        self.registerWindow.setupUi()
         self.registerWindow.show()
 
 

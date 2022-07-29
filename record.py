@@ -77,8 +77,6 @@ class RecordWindow(QMainWindow):
 
     def retranslateUi(self):
         self.setWindowTitle(self._translate("MainWindow", "EPFL Smart Kitchen Recorder"))
-        # self.title.setText(self._translate("MainWindow", "Register Subject"))
-        # self.btSubmit.setText(self._translate("MainWindow", "Submit"))
 
     def launchMainSession(self):
         self.close()

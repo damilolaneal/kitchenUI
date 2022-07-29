@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QButtonGroup,
     QComboBox,
+    QMessageBox,
 )
 from dateSelector import *
 import welcome
@@ -114,16 +115,17 @@ class RegisterWindow(QMainWindow):
         self.statusbar.setObjectName("statusbar")
         self.setStatusBar(self.statusbar)
 
-        self.retranslateUi()
+        self.reTranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    def retranslateUi(self):
+    def reTranslateUi(self):
         self.setWindowTitle(self._translate("MainWindow", "EPFL Smart Kitchen Recorder"))
         # self.title.setText(self._translate("MainWindow", "Register Subject"))
         self.btSubmit.setText(self._translate("MainWindow", "Submit"))
 
     def launchMainSession(self):
-        self.close()
+        # self.close()
+        print(self.validate_form())
         # self.mainWindow.show()
 
     def labelEditCombo(self, xpos, ypos, width, height, labelName: str, labelObjectName: str, editObjectName: str):
@@ -185,6 +187,55 @@ class RegisterWindow(QMainWindow):
         radioButton.setStyleSheet("color: #52575C; ")
         radioButton.setText(self._translate("MainWindow", radioText))
         return radioButton
+
+    def dialog(self, message):
+        QMessageBox.critical(self, "Error!", message,
+                             buttons=QMessageBox.StandardButton.Ok,
+                             defaultButton=QMessageBox.StandardButton.Ok,
+                             )
+
+    def validate_form(self) -> bool:
+        fName = self.fNameEdit.text()
+        lName = self.lNameEdit.text()
+        nat = self.natEdit.text()
+        year = self.yearCombo.currentIndex()
+        month = self.monthCombo.currentIndex()
+        day = self.dayCombo.currentIndex()
+        gender = self.genderGroup.checkedId()
+        dom_hand = self.domGroup.checkedId()
+        sub_group = self.strokeGroup.checkedId()
+
+        # print(fName, lName, nat, year, month, day, gender, dom_hand, sub_group, sep="|")
+
+        if fName == "":
+            self.dialog("Please enter first name before submission")
+            return False
+
+        if lName == "":
+            self.dialog("Please enter last name before submission")
+            return False
+
+        if nat == "":
+            self.dialog("Please enter your nationality before submission")
+            return False
+
+        if year < 1 or month < 1 or day < 1:
+            self.dialog("Please enter your date of birth before submission")
+            return False
+
+        if gender < 0:
+            self.dialog("Please select a gender before submission")
+            return False
+
+        if dom_hand < 0:
+            self.dialog("Please select a dominant hand before submission")
+            return False
+
+        if sub_group < 0:
+            self.dialog("Please select a dominant hand before submission")
+            return False
+
+        return True
 
 
 if __name__ == "__main__":
