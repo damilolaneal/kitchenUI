@@ -18,7 +18,6 @@ def grade(filename):
                 # print("collected num = ", num)
                 result += num
                 # print(result)
-    result = result/10.0
     with open(filename, "a") as file:
         file.write("\nTotal - " + str(result))
     return result

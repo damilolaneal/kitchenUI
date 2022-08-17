@@ -104,6 +104,12 @@ def print_hi():
     # sc = 0
     # color = 0
     # print(floodFill(image, sr, sc, color))
+    # songs = [40, 20, 60]  # [10, 50, 90, 30][30, 20, 150, 100, 40]
+    # print(playlist(songs))
+    # elements = [5, 3, 7, 10, 14]
+    # s = "I am using hackerrank to improve programming"
+    # t = "am hackerrank to improve"
+    # print(missingWords(s, t))
     print(grade("grade.txt"))
 
 

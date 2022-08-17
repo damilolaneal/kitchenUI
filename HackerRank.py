@@ -1,6 +1,7 @@
 # Author: Damilola Olawoyin-Yussuf
 
 import heapq
+import math
 
 
 def beautifulTriplets(d, arr):
@@ -753,7 +754,7 @@ def floodFill(image, sr, sc, color):
         image[sr_][sc_] = color
         visited.add((sr_, sc_))
 
-        t, b = sr_ - 1,  sr_ + 1
+        t, b = sr_ - 1, sr_ + 1
         l_, r = sc_ - 1, sc_ + 1
         if 0 <= t < maxRow and image[t][sc_] == imVal and ((t, sc_) not in visited):
             myStack.append([t, sc_])
@@ -768,3 +769,77 @@ def floodFill(image, sr, sc, color):
             myStack.append([sr_, r])
             visited.add((sr_, r))
     return image
+
+
+def playlist(songs):
+    # Write your code here
+    count = 0
+    covered = []
+    for i, data in enumerate(songs):
+        rem = (math.ceil(data / 60) * 60) - data
+        if i < len(songs) - 1:
+            temp = songs[:i] + songs[i + 1:]
+        else:
+            temp = songs[:i]
+        print(temp)
+        if rem in temp:
+            lis = sorted([data, rem])
+            if lis not in covered:
+                print("rem exists", rem)
+                count += 1
+                covered.append(lis)
+    return count
+
+
+def dec2Bin(n):
+    return "{0:b}".format(int(n))
+
+
+def rearrange(elements):
+    bin_el = {}
+    for i in elements:
+        binary = dec2Bin(i)
+        count = binary.count('1')
+        if count in bin_el:
+            curr = bin_el.get(count) + [i]
+            bin_el[count] = curr
+        else:
+            bin_el[count] = [i]
+    sorted(bin_el)
+
+    ret = []
+    for k, v in bin_el.items():
+        ret += sorted(v)
+    return ret
+
+
+def missingWords(s, t):
+    missing = []
+    a = s.split()
+    b = t.split()
+    print(a)
+    print(b)
+    temp = 0
+    for i in a:
+        if i != b[temp]:
+            missing.append(i)
+        else:
+            if temp + 1 < len(b) - 1:
+                temp += 1
+    return missing
+
+
+def maxProfit(prices):
+    """
+        :type prices: List[int]
+        :rtype: int
+        """
+    max_ = 0
+    curr = prices[0]
+    for i in prices[1:]:
+        if i < curr:
+            curr = i
+        else:
+            diff = i - curr
+            max_ = max(max_, diff)
+    return max_

@@ -16,7 +16,11 @@ from PyQt5.QtWidgets import (
     QMainWindow,
     QLineEdit,
     QPlainTextEdit,
+    QComboBox,
+    QMessageBox,
 )
+from recordBackend import *
+from datetime import date, datetime
 
 
 def fontOnly(fontFamily: str, pointSize: int, bold=False):
@@ -37,14 +41,21 @@ class RecordWindow(QMainWindow):
         self.title = self.labelOnly(20, 25, 300, 41, "Record Session", "title", 12)
         self.logo = QtWidgets.QLabel(self.centralwidget)
 
-        self.cSubjectLabel, self.cSubjectEdit = self.labelEditCombo(20, 90, 140, 20, "Choose Subject:", "cSubjectLabel",
-                                                                    "cSubjectEdit")
+        namelist = ["Select Subject", "Dami lola", "piss off", "python rocks"]
+
+        self.cSubjectLabel = self.labelOnly(20, 90, 140, 20, "Choose Subject:", "cSubjectLabel", 10)
+        # self.cSubjectEdit = self.labelEditCombo(20, 90, 140, 20, "Choose Subject:", "cSubjectLabel", "cSubjectEdit")
+        self.cSubjectEdit = self.comboOnly(160, 90, 240, 30, "cSubjectEdit", namelist, True)
         self.sLengthLabel, self.sLengthEdit = self.labelEditCombo(20, 150, 230, 20, "Session Length (in seconds):",
                                                                   "sLengthLabel", "sLengthEdit")
-        self.commentLabel, self.commentEdit = self.plainEditCombo(20, 210, 100, 20,  "Comments:",
+        self.commentLabel, self.commentEdit = self.plainEditCombo(20, 210, 100, 20, "Comments:",
                                                                   "commentLabel", "commentEdit")
         self.btRecord = self.buttonOnly(120, 350, 160, 42, "Start Recording", "btRecord", "#005FB8", 10)
         self.btEnd = self.buttonOnly(350, 350, 150, 42, "End Session", "btEnd", "#B80000", 10)
+        self._id = ""
+        self.current_date = ""
+
+        self.table = RecordBackend()
 
         # self.mainWindow = MyMainWindow()
 
@@ -63,7 +74,9 @@ class RecordWindow(QMainWindow):
         self.title.setScaledContents(True)
         self.title.setWordWrap(True)
 
-        self.btRecord.clicked.connect(self.launchMainSession)
+        self.btRecord.clicked.connect(self.record_click)
+        self.btEnd.clicked.connect(self.end_click)
+        self.btEnd.setEnabled(False)
 
         self.setCentralWidget(self.centralwidget)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 51))
@@ -78,8 +91,24 @@ class RecordWindow(QMainWindow):
     def retranslateUi(self):
         self.setWindowTitle(self._translate("MainWindow", "EPFL Smart Kitchen Recorder"))
 
-    def launchMainSession(self):
-        self.close()
+    def record_click(self):
+        if self.validate_form():
+            self._id = self.cSubjectEdit.currentText().replace(" ", "_")
+            self.current_date = datetime.today().strftime('%Y%m%d%H%M%S')
+            begin_comment = self.commentEdit.toPlainText()
+            print(self._id, self.current_date, begin_comment, sep="|")
+            if self.table.insert_init_data(self._id, self.current_date, begin_comment):
+                self.commentEdit.setPlainText("")
+                self.btEnd.setEnabled(True)
+                self.btRecord.setEnabled(False)
+
+    def end_click(self):
+        if self.validate_form():
+            end_comment = self.commentEdit.toPlainText()
+            print(self._id, self.current_date, end_comment, sep="|")
+            if self.table.update_end_comment(end_comment, self._id, self.current_date):
+                self.table.close_con()
+                self.close()
         # self.mainWindow.show()
 
     def labelEditCombo(self, xpos, ypos, width, height, labelName: str, labelObjectName: str, editObjectName: str):
@@ -121,6 +150,38 @@ class RecordWindow(QMainWindow):
         edit.setObjectName(editObjectName)
         edit.setStyleSheet("color: #52575C; ")
         return label, edit
+
+    def comboOnly(self, xpos, ypos, width, height, objectName: str, items: list, enabled: bool):
+        combo = QComboBox(self.centralwidget)
+        combo.setEnabled(enabled)
+        combo.addItems(items)
+        combo.setGeometry(QtCore.QRect(xpos, ypos, width, height))
+        combo.setFont(fontOnly("Segoe UI", 10))
+        combo.setObjectName(objectName)
+        combo.setStyleSheet("color: #52575C; ")
+        return combo
+
+    def dialog(self, message):
+        QMessageBox.critical(self, "Error!", message,
+                             buttons=QMessageBox.StandardButton.Ok,
+                             defaultButton=QMessageBox.StandardButton.Ok,
+                             )
+
+    def validate_form(self) -> bool:
+        sLength = self.sLengthEdit.text()
+        subject_id = self.cSubjectEdit.currentIndex()
+
+        # print(fName, lName, nat, year, month, day, gender, dom_hand, sub_group, sep="|")
+
+        if subject_id < 1:
+            self.dialog("Please select a subject for recording")
+            return False
+
+        if sLength == "":
+            self.dialog("Please enter session length before recording")
+            return False
+
+        return True
 
 
 if __name__ == "__main__":

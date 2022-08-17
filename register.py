@@ -194,6 +194,15 @@ class RegisterWindow(QMainWindow):
                              defaultButton=QMessageBox.StandardButton.Ok,
                              )
 
+    def successDialog(self, message):
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("Success!")
+        dlg.setText("Member registration successful")
+        button = dlg.exec()
+
+        if button == QMessageBox.Ok:
+            print("OK!")  # you shuld put the launch home here
+
     def validate_form(self) -> bool:
         fName = self.fNameEdit.text()
         lName = self.lNameEdit.text()
@@ -234,7 +243,9 @@ class RegisterWindow(QMainWindow):
         if sub_group < 0:
             self.dialog("Please select a dominant hand before submission")
             return False
-
+        from datetime import date
+        today = date.today()
+        print(today.year - int(self.yearCombo.currentText()) - ((today.month, today.day) < (month, day)))
         return True
 
 
